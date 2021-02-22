@@ -8,3 +8,16 @@ d3.json('samples.json').then((data)=>{
       select.append('option').text(v);
   })
 })
+
+// make the plot with selected test id and pull in data
+function makePlot(testId){
+    d3.json('samples.json').then((data)=>{
+        // This is the array
+        var samples=data.samples;
+        var testNum=samples.map(row=>row.id).indexOf(testId);
+        // Make bar plot
+        var otuValueTen=samples.map(row=>row.sample_values);
+        var otuValueTen=otuValueTen[testNum].slice(0,10).reverse();
+        var otuIdTen=samples.map(row=>row.otu_ids);
+        var otuIdTen=otuIdTen[testNum].slice(0,10);
+      
