@@ -14,6 +14,7 @@ function makePlot(testId){
     d3.json('samples.json').then((data)=>{
         var samples=data.samples;
         var testNum=samples.map(row=>row.id).indexOf(testId);
+
         // Make bar plot
         var otuValueTen=samples.map(row=>row.sample_values);
         var otuValueTen=otuValueTen[testNum].slice(0,10).reverse();
@@ -29,8 +30,8 @@ function makePlot(testId){
             orientation:'h'
         }
         Plotly.newPlot('bar',[trace]);
-    
-    // make bubble chart
+
+        // make bubble chart
         var otuValue=samples.map(row=>row.sample_values);
         var otuValue=otuValue[testNum];
         var otuId=samples.map(row=>row.otu_ids);
@@ -56,41 +57,51 @@ function makePlot(testId){
         var bubbleLayout={
             xaxis:{
                 autochange: true,
-                height: 600,
-                width: 1000,
+                height: 800,
+                width: 1200,
                 title: {
                     text: 'OTU ID'
                 }
             },
         };
-        Plotly.newPlot('bubble',data1,bubbleLayout);   
-   
-    
-      
-// make gauge chart 
-var meta=data.metadata;
-var data2 = [
-    {
-        domain: { x: [0, 1], y: [0, 1] },
-        value: meta[testNum].wfreq,
-        title: { text: "Washing frequency" },
-        type: "indicator",
-        mode: "gauge+number",
-        gauge: { axis: { range: [null, 9] },
-        bar:{color: 'orange'},
-           steps: [
-            { range: [0, 2], color: "rgba(14, 127, 0, .5)" },
-            { range: [2, 3], color: "rgba(110, 154, 22, .5)" },
-            { range: [3, 4], color: "rgba(170, 202, 42, .5)" },
-            { range: [4, 5], color: "rgba(202, 209, 95, .5)" },
-            { range: [5, 6], color: "rgba(210, 206, 145, .5)" },
-            { range: [6, 8], color: "rgba(232, 226, 202, .5)" },
-            { range: [8, 9], color: "rgba(255, 255, 255, 0)" }
-          ]}
-    }
-];
+        Plotly.newPlot('bubble',data1,bubbleLayout); 
 
-var gaugeLayout = { width: 600, height: 500};
-Plotly.newPlot('gauge', data2, gaugeLayout);
+        // make gauge chart 
+        var meta=data.metadata;
+        var data2 = [
+            {
+                domain: { x: [0, 1], y: [0, 1] },
+                value: meta[testNum].wfreq,
+                title: { text: "Washing frequency" },
+                type: "indicator",
+                mode: "gauge+number",
+                gauge: { axis: { range: [null, 9] },
+                bar:{color: 'orange'},
+                   steps: [
+                    { range: [0, 2], color: "rgba(14, 127, 0, .5)" },
+                    { range: [2, 3], color: "rgba(110, 154, 22, .5)" },
+                    { range: [3, 4], color: "rgba(170, 202, 42, .5)" },
+                    { range: [4, 5], color: "rgba(202, 209, 95, .5)" },
+                    { range: [5, 6], color: "rgba(210, 206, 145, .5)" },
+                    { range: [6, 8], color: "rgba(232, 226, 202, .5)" },
+                    { range: [8, 9], color: "rgba(255, 255, 255, 0)" }
+                  ]}
+            }
+        ];
+        
+        var gaugeLayout = { width: 600, height: 500};
+        Plotly.newPlot('gauge', data2, gaugeLayout);
 
-})}
+        // display meta info
+        var metadata=d3.select('#sample-metadata');
+        metadata.html('');
+        Object.entries(meta[testNum]).forEach(([k,v])=>{
+            metadata.append('p').text(`${k.toUpperCase()}:\n${v}`);
+        })
+    })
+  }
+  
+  function optionChanged(newId) {
+    // Select new data from ID
+    makePlot(newId);
+  }
